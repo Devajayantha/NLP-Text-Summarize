@@ -1,0 +1,3 @@
+ When text is single-spaced, the space between paragraphs is double-spaced. For many years, whether writing letters, essays, articles or academic papers, the first line of each paragraph was indented five spaces
+ The other option is to follow the traditional single spacing of text with double-spacing between paragraphs, but, iInstead of indenting paragraphs, each paragraph is flush left with the rest of the text. As long as paragraphs are separated by double-spacing, there’s no confusion about where the next paragraph or line of dialogue begins
+ For each character speaking, a new paragraph is begun. If other paragraphs are indented, the first line of dialogue will also be indented. If paragraphs are flush left, so, too, will be the lines of dialogue
