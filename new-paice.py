@@ -10,10 +10,10 @@ then use the object's stem method to stem words::
     stemmed_word = stemmer.stem(word)
 """
 
-from nltk import word_tokenize
 import re
 from collections import defaultdict
-
+from nltk import word_tokenize
+from nltk.stem.lancaster import LancasterStemmer
 
 class PaiceHuskStemmer(object):
     """Implements the Paice-Husk stemming algorithm.
@@ -27,7 +27,6 @@ class PaiceHuskStemmer(object):
     (?P<cont>[.>])
     """, re.UNICODE | re.VERBOSE)
 
-    # rule_explr bahasa unicode regrex yang di compile
     stem_expr = re.compile("^\w+", re.UNICODE)
 
     def __init__(self, ruletable):
@@ -61,20 +60,11 @@ class PaiceHuskStemmer(object):
                 raise Exception("Bad rule: %r" % line)
 
     def first_vowel(self, word):
-
-        vowels_occurence = [p for p in [word.find(v) for v in "aeiou"]
-                  if p > -1]
-
-        if not vowels_occurence:
-            vp = -1
-        else :
-            vp = min(vowels_occurence)
-
+        vp = min([p for p in [word.find(v) for v in "aeiou"]
+                  if p > -1])
         yp = word.find("y")
-
-        if (yp > 0 and yp < vp) or (vp == -1 and yp) :
+        if yp > 0 and yp < vp:
             return yp
-        # print(vp)
         return vp
 
     def strip_prefix(self, word):
@@ -88,105 +78,23 @@ class PaiceHuskStemmer(object):
         """Returns a stemmed version of the argument string.
         """
 
-        # rules : isinya dictionary
-        # struktur dict nya kira2 gini:
-        #   {
-        #       {
-        #           key : a
-        #           value : {
-        #               {
-        #                   ending: 'ia',
-        #                   intact: true, ini pake ngecek kata nya itu perlu di stem apa enggak (kl true dan katanya masih belum pernah diapa2in(is_intact = true) -> jalan proses stem)
-        #                   num   : 2, // ini ni panjang endingnya, nanti dipake untuk motong akhiran kata
-        #                   append: '', // ini nanti yang dipake untuk ganti akhiran yang udah dipotong tu
-        #                   cont: false, // stop loop kl false, jadi kl masih true berarti setelah step ini ada kemungkinan dia masih belum stem
-        #                           contoh misal katanya hopping
-        #                           pertama kali kena dia aturan ing, dihilangkan jadi 'ing' -> ''. sehingga hopping -> hopp. anggap diaturannya ni nilai cont nya true.
-        #                               jadi loopnya lanjut untuk ngecek apakah hopp ini kena aturan stem yang lain
-        #                           kedua hopp ni ternyata kena aturan di menghilangkan akhiran huruf double 'pp' -> 'p'. anggap diaturannya ni nilai cont nya false
-        #
-        #                           udah selesai loop akhirnya kita dapet stemnya hop
-        #               },
-        #               {
-        #                   ending: 'a',
-        #                   intact: true,
-        #                   num   : 1,
-        #                   append: '',
-        #                   cont: false
-        #               }
-        #           }
-        #       },
-        #       {
-        #           key : c
-        #           value : {
-        #               {
-        #                   ending: 'c',
-        #                   intact: true,
-        #                   num   : 1,
-        #                   append: '',
-        #                   cont: false
-        #               }
-        #           }
-        #       },
-        #   }
         rules = self.rules
-
-        # print( rules )
-        # print ('----------------------------')
-
-        # print ('\ndaftar akhiran yang kena rule: ')
-        # for key in rules:
-        #     print (key)
-
-        # liat ini biar tau rule dengan aturan a kyak gimana itu ada 'ia' sama 'a'
-        # nah tau kata itu bakal kena aturan yang mana tar liat dibawah
-        # print ("\nrules a")
-        # print ( rules.get('a') )
         match = self.stem_expr.match(word)
-
-        # kl enngak match berarti gak perlu di stem
         if not match: return word
-
-        # ngilangin misal ada awalan kilo etc
         stem = self.strip_prefix(match.group(0))
 
-        #  pertama kali is_intact pasti true - gunanya nandain katanya belum diapa2in
         is_intact = True
         continuing = True
         while continuing:
             pfv = self.first_vowel(stem)
-            # print(pfv)
-
-            #  daftar rule yang mau kita pake, didapet dari huruf terakhir kata, misal rule a, isi list kayak diatas tadi
+            print("isinya ",pfv)
             rulelist = rules.get(stem[-1])
-
             if not rulelist: break
-            # print('Start')
+
             continuing = False
             for ending, intact, num, append, cont in rulelist:
-                # print('______________')
-                # print(ending)
-                # print('--------------')
-                # print(intact)
-                # print('--------------')
-                # print(num)
-                # print('--------------')
-                # print(append)
-                # print('--------------')
-                # print(cont)
-                # print('**************')
-
-                #  nah disini dah ditauin pake rule yang mana, setelah ngambil rulelist diatas
-                #  misal rule a  ada rule untuk ia, a
-                # print('****END******')
                 if stem.endswith(ending):
-                    # print('########################################')
-                    # print(stem.endswith(ending))
-                    # print('########################################')
-                    # skip kl gak is_intact
                     if intact and not is_intact: continue
-
-                    # panjang kata baru setelah stem dan penambahan di rule pas iterasi ini
                     newlen = len(stem) - num + len(append)
 
                     if ((pfv == 0 and newlen < 2)
@@ -206,6 +114,7 @@ class PaiceHuskStemmer(object):
 
 
 # The default rules for the Paice-Husk stemming algorithm
+my_rules=("gni3>")
 defaultrules = """
 ai*2.     { -ia > -   if intact }
 a*1.      { -a > -    if intact }
@@ -323,3 +232,18 @@ yca3>     { -acy > -   }
 zi2>      { -iz > -    }
 zy1s.     { -yz > -ys  }
 """
+
+# Make the standard rules available as a module-level function
+paragraph ="lived"
+tokens = word_tokenize( paragraph )
+stem = PaiceHuskStemmer(defaultrules)
+st = LancasterStemmer()
+print(st.stem('bought'))
+print(stem.stem(paragraph))
+
+
+# print '\n'.join( stem.rules.a )
+# exit()
+# print(stem.stem(tokens))
+#
+# print( [stem.stem(token) for token in tokens] )

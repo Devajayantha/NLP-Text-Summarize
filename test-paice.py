@@ -13,7 +13,8 @@ then use the object's stem method to stem words::
 from nltk import word_tokenize
 import re
 from collections import defaultdict
-
+from nltk import word_tokenize
+from nltk.stem.lancaster import LancasterStemmer
 
 class PaiceHuskStemmer(object):
     """Implements the Paice-Husk stemming algorithm.
@@ -131,7 +132,7 @@ class PaiceHuskStemmer(object):
         #   }
         rules = self.rules
 
-        # print( rules )
+        print( rules )
         # print ('----------------------------')
 
         # print ('\ndaftar akhiran yang kena rule: ')
@@ -142,6 +143,8 @@ class PaiceHuskStemmer(object):
         # nah tau kata itu bakal kena aturan yang mana tar liat dibawah
         # print ("\nrules a")
         # print ( rules.get('a') )
+
+
         match = self.stem_expr.match(word)
 
         # kl enngak match berarti gak perlu di stem
@@ -155,39 +158,39 @@ class PaiceHuskStemmer(object):
         continuing = True
         while continuing:
             pfv = self.first_vowel(stem)
-            # print(pfv)
+            print("print : ",pfv)
 
             #  daftar rule yang mau kita pake, didapet dari huruf terakhir kata, misal rule a, isi list kayak diatas tadi
             rulelist = rules.get(stem[-1])
 
             if not rulelist: break
-            # print('Start')
+            print('Start')
             continuing = False
             for ending, intact, num, append, cont in rulelist:
-                # print('______________')
-                # print(ending)
-                # print('--------------')
-                # print(intact)
-                # print('--------------')
-                # print(num)
-                # print('--------------')
-                # print(append)
-                # print('--------------')
-                # print(cont)
-                # print('**************')
+                print('______________')
+                print("Ending : ",ending)
+                print('--------------')
+                print("Intact : ",intact)
+                print('--------------')
+                print("Num : ",num)
+                print('--------------')
+                print("Append : ",append)
+                print('--------------')
+                print("Cound : ",cont)
+                print('**************')
 
                 #  nah disini dah ditauin pake rule yang mana, setelah ngambil rulelist diatas
-                #  misal rule a  ada rule untuk ia, a
-                # print('****END******')
+                print('****END******')
                 if stem.endswith(ending):
-                    # print('########################################')
-                    # print(stem.endswith(ending))
-                    # print('########################################')
+                    print('########################################')
+                    print(stem.endswith(ending))
+                    print('########################################')
                     # skip kl gak is_intact
                     if intact and not is_intact: continue
 
                     # panjang kata baru setelah stem dan penambahan di rule pas iterasi ini
                     newlen = len(stem) - num + len(append)
+                    print("newlen : ",newlen)
 
                     if ((pfv == 0 and newlen < 2)
                             or (pfv > 0 and newlen < 3)):
@@ -323,3 +326,10 @@ yca3>     { -acy > -   }
 zi2>      { -iz > -    }
 zy1s.     { -yz > -ys  }
 """
+
+paragraph ="opportunity"
+# tokens = word_tokenize(paragraph)
+stem = PaiceHuskStemmer(defaultrules)
+print("hasil :",stem.stem(paragraph))
+st = LancasterStemmer()
+print("Lancasre Stemmer: ",st.stem('opportunity'))

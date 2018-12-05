@@ -1,0 +1,1 @@
+Natural language processing is a way for computers to analyze, understand, and derive meaning from human language in a smart and useful way. Developers can organize and structure knowledge to perform tasks such as automatic summarization, translation, named entity recognition, relationship extraction, sentiment analysis, speech recognition, and topic segmentation

@@ -123,18 +123,18 @@ zi2>      { -iz > -    }
 zy1s.     { -yz > -ys  }
 """
 
-
 tfidf_all = []
 bobot_all = []
 kesimpulan_all = []
 kalimat_rank_all = []
 
 
-class corpus :
+class corpus:
     def openText(self, path):
         self.ds = open(path, 'r')
         text = self.ds.read()
         return text
+
     def tokenisasi(self, txt):
         hasil_token = word_tokenize(txt)
         tandaBaca = [',', '.', ':', ';', '(', ')']
@@ -143,10 +143,11 @@ class corpus :
             if new not in tandaBaca:
                 hasilKata.append(new.lower())
         return hasilKata
+
     def stopwords(self, stp):
         # \w semua huruf, digit, dan karakter underscore
         # mencocokan satu atau beberapa kali pola
-        #metode findall() mengembalikan list yang berupa string yang cocok dengan regex
+        # metode findall() mengembalikan list yang berupa string yang cocok dengan regex
         tokens = re.findall('\w+', str(stp))
         cek_stopword = set(stopwords.words('english'))
         words = []
@@ -159,11 +160,12 @@ class corpus :
         # most_common menampilkan daftar elemen paling umum dan jumlah yang paling umum hingga paling sedikit.
         # jika () none maka menampilkan daftar semua jumlah elemen.
         frequency = {}
-        kalimat =[]
+        kalimat = []
         tokens = re.findall('\w+', str(fre))
         for word in tokens:
             # print(frequency)
             count = frequency.get(word, 0)
+            # print(count)
             frequency[word] = count + 1
 
         frequency_list = frequency.keys()
@@ -173,9 +175,9 @@ class corpus :
             # print (words, frequency[words])
             kalimat.append(words)
             kalimat.append(frequency[words])
-        return(kalimat)
+        return (kalimat)
 
-    def typedata(self,tpd):
+    def typedata(self, tpd):
         tokens = re.findall('\w+', str(tpd))
         frekuensi = {}
         type = []
@@ -189,7 +191,7 @@ class corpus :
             type.append(word)
 
         # print(frequency_list)
-        return(type)
+        return (type)
 
     def stemming(self, stm):
         tokens = re.findall('\w+', str(stm))
@@ -198,10 +200,10 @@ class corpus :
         hasil = []
         for steming in tokens:
             hasil.append(stem.stem(steming))
-        # str1 = ', '.join(hasil)
+        str1 = ', '.join(hasil)
         # str 1 convert list to string
         # print(str1)
-        return(hasil)
+        return (str1)
 
     def computeIDF(self, docList):
         import math
@@ -226,116 +228,111 @@ class corpus :
         # print(len(docList))
         return idfDict
 
-    # def summarizer(self, vtm):
-    #     text_paragraph = vtm.splitlines()
-    #     count_paragraf = len(text_paragraph)
-    #
-    #     paragraph = []
-    #
-    #     for x in range(0, count_paragraf):
-    #         paragraph.append([x, text_paragraph[x].split('. ')])
-    #     # print(paragraph)
-    #     count_paragraph=len(paragraph)
-    #
-    #     # looping didalam paragraf
-    #     for i in range(0, count_paragraph):
-    #         array_kalimat = []
-    #         count_text_paragraph = len(paragraph[i][1])
-    #         print("")
-    #         print("---------------------------")
-    #         print("PARAGRAF KE- %d" % (i + 1))
-    #         print("---------------------------")
-    #         teks = ''
-    #         for xz in range(0, count_text_paragraph):
-    #             teks = teks + paragraph[i][1][xz] + '. '
-    #             # print("Paragraf : ",[x]+1)
-    #         print("Teks Paragraf :",teks)
-    #         token = self.tokenisasi(teks)
-    #         stopwords = self.stopwords(token)
-    #         stemming = self.stemming(stopwords)
-    #
-    #         wordDict = []
-    #         kalimat_all = []
-    #         bobot = []
-    #         kesimpulan = []
-    #
-    #         #------------mencari IDf-------------------------
-    #         for x in range(0, count_text_paragraph):
-    #             wordDict.append(dict.fromkeys(stemming, 0))
-    #             # print("DF : ",wordDict[x])
-    #         #     for i in range(0, len(wordDict)):
-    #         #         for word in doc[i]:
-    #         for a in range(0, len(paragraph[i][1])):
-    #             kalimat2 = self.tokenisasi(paragraph[i][1][a])
-    #             kalimat1 = self.stopwords(kalimat2)
-    #             kalimat = self.stemming(kalimat1)
-    #             # print("Isi Kalimat :", kalimat)
-    #             kalimat_all.append(paragraph[i][1][a])
-    #             for kata in kalimat:
-    #                 wordDict[a][kata] += 1
-    #             print("Kalimat : %d" % (a+1), wordDict[a])
-    #             # print(len(wordDict))
-    #         idfs = self.computeIDF(wordDict)
-    #         print("ISI IDF",idfs)
-    #
-    #         for y in range(0, count_text_paragraph):
-    #             # array_kalimat.append(paragraph[i][1][y]+'')
-    #             word_token = self.tokenisasi(paragraph[i][1][y] + '')
-    #             stpword = self.stopwords(word_token)
-    #             stming = self.stemming(stpword)
-    #             array_kalimat.append(stming)
-    #         print("Array Kalimat : ", array_kalimat)
-    #
-    #         print("----------------------------------------TF-IDF----------------------------------------------------")
-    #         tfidf = []
-    #         val = 0
-    #         for lp in range(0, count_text_paragraph):
-    #
-    #             val = 0
-    #             # for xy in array_kalimat[lp]:
-    #             for word in array_kalimat[lp]:
-    #                 a = wordDict[lp][word] * idfs[word]
-    #                 val += a
-    #                 # print(a)
-    #             # print("Word :", array_kalimat[lp])
-    #             tfidf.append(val)
-    #             hasil_tfidf = tfidf
-    #             print("Kalimat %d" % (lp + 1), array_kalimat[lp],". Nilai Bobot :",tfidf[lp])
-    #
-    #         print("----------------------------------------RANGKING--------------------------------------------------")
-    #         for x in range(0, len(paragraph[i][1])):
-    #             for y in range(x + 1, len(paragraph[i][1])):
-    #                 if hasil_tfidf[x] < hasil_tfidf[y]:
-    #                     sample = hasil_tfidf[x]
-    #                     hasil_tfidf[x] = hasil_tfidf[y]
-    #                     hasil_tfidf[y] = sample
-    #                     sample_kalimat = kalimat_all[x]
-    #                     kalimat_all[x] = kalimat_all[y]
-    #                     kalimat_all[y] = sample_kalimat
-    #
-    #         limit_kesimpulan = len(paragraph[i][1]) / 2
-    #         print(len(paragraph[i][1]))
-    #         limit_kesimpulan = round(limit_kesimpulan)
-    #         print("isi round",round(limit_kesimpulan))
-    #         print("INT", int(float(limit_kesimpulan)))
-    #         if limit_kesimpulan == 0:
-    #             limit_kesimpulan = 1
-    #
-    #         for x in range(0, limit_kesimpulan):
-    #             print(kalimat_all[x])
-    #             kesimpulan.append(kalimat_all[x])
-    #             bobot.append(hasil_tfidf[x])
-    #             # print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    #             # print("")
-    #         bobot_all.append(bobot)
-    #         kesimpulan_all.append(kesimpulan)
-    #
-    #     jml_paragraf = len(paragraph)
-    #     for x in range(0, count_paragraf):
-    #         print("")
-    #         print("KESIMPULAN PARAGRAF %d" % (x + 1))
-    #         print(kesimpulan_all[x])
-    #         print(bobot_all[x])
-    #         print("")
-    #         print("##################################################################################################")
-    #     return(kesimpulan_all,bobot_all)
+    def summarizer(self, vtm):
+        text_paragraph = vtm.splitlines()
+        count_paragraf = len(text_paragraph)
+
+        paragraph = []
+
+        for x in range(0, count_paragraf):
+            paragraph.append([x, text_paragraph[x].split('. ')])
+        # print(paragraph)
+        count_paragraph = len(paragraph)
+
+        # looping didalam paragraf
+        for i in range(0, count_paragraph):
+            array_kalimat = []
+            count_text_paragraph = len(paragraph[i][1])
+            print("")
+            print("---------------------------")
+            print("PARAGRAF KE- %d" % (i + 1))
+            print("---------------------------")
+            teks = ''
+            for xz in range(0, count_text_paragraph):
+                teks = teks + paragraph[i][1][xz] + '. '
+                # print("Paragraf : ",[x]+1)
+            print("Teks Paragraf :", teks)
+            token = self.tokenisasi(teks)
+            stopwords = self.stopwords(token)
+            stemming = self.stemming(stopwords)
+
+            wordDict = []
+            kalimat_all = []
+            bobot = []
+            kesimpulan = []
+
+            # ------------mencari IDf-------------------------
+            for x in range(0, count_text_paragraph):
+                wordDict.append(dict.fromkeys(stopwords, 0))
+                # print("DF : ",wordDict[x])
+            #     for i in range(0, len(wordDict)):
+            #         for word in doc[i]:
+            for a in range(0, len(paragraph[i][1])):
+                kalimat2 = self.tokenisasi(paragraph[i][1][a])
+                kalimat = self.stopwords(kalimat2)
+                # print("Isi Kalimat :", kalimat)
+                kalimat_all.append(paragraph[i][1][a])
+                for kata in kalimat:
+                    wordDict[a][kata] += 1
+                print("WordDict : ", wordDict[a])
+                # print(len(wordDict))
+            idfs = self.computeIDF(wordDict)
+            print("ISI IDF", idfs)
+
+            for y in range(0, count_text_paragraph):
+                # array_kalimat.append(paragraph[i][1][y]+'')
+                word_token = self.tokenisasi(paragraph[i][1][y] + '')
+                stpword = self.stopwords(word_token)
+                array_kalimat.append(stpword)
+            print("Array Kalimat : ", array_kalimat)
+
+            print("----------------------------------------TF-IDF----------------------------------------------------")
+            tfidf = []
+            val = 0
+            for lp in range(0, count_text_paragraph):
+
+                val = 0
+                # for xy in array_kalimat[lp]:
+                for word in array_kalimat[lp]:
+                    a = wordDict[lp][word] * idfs[word]
+                    val += a
+                    # print(a)
+                # print("Word :", array_kalimat[lp])
+                tfidf.append(val)
+                hasil_tfidf = tfidf
+                print("Kalimat %d" % (lp + 1), array_kalimat[lp], ". Nilai Bobot :", tfidf[lp])
+
+            print("----------------------------------------RANGKING--------------------------------------------------")
+            for x in range(0, len(paragraph[i][1])):
+                for y in range(x + 1, len(paragraph[i][1])):
+                    if hasil_tfidf[x] < hasil_tfidf[y]:
+                        sample = hasil_tfidf[x]
+                        hasil_tfidf[x] = hasil_tfidf[y]
+                        hasil_tfidf[y] = sample
+                        sample_kalimat = kalimat_all[x]
+                        kalimat_all[x] = kalimat_all[y]
+                        kalimat_all[y] = sample_kalimat
+
+            limit_kesimpulan = len(paragraph[i][1]) / 2
+            limit_kesimpulan = round(limit_kesimpulan)
+            if limit_kesimpulan == 0:
+                limit_kesimpulan = 1
+
+            for x in range(0, limit_kesimpulan):
+                print(kalimat_all[x])
+                kesimpulan.append(kalimat_all[x])
+                bobot.append(hasil_tfidf[x])
+                # print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+                print("")
+            bobot_all.append(bobot)
+            kesimpulan_all.append(kesimpulan)
+
+        jml_paragraf = len(paragraph)
+        for x in range(0, jml_paragraf):
+            print("")
+            print("KESIMPULAN PARAGRAF %d" % (x + 1))
+            print(kesimpulan_all[x])
+            print(bobot_all[x])
+            print("")
+            print("##################################################################################################")
+        return (kesimpulan_all, bobot_all)
