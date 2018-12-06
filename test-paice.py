@@ -328,6 +328,7 @@ zy1s.     { -yz > -ys  }
 """
 
 paragraph ="opportunity"
+# paragraph ="kilometer"
 # tokens = word_tokenize(paragraph)
 stem = PaiceHuskStemmer(defaultrules)
 print("hasil :",stem.stem(paragraph))

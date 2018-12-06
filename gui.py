@@ -12,6 +12,7 @@ import wx.xrc
 import wx.richtext
 from nlp import *
 import os
+import math
 ###########################################################################
 ## Class MainFrame
 ###########################################################################
@@ -177,6 +178,7 @@ class MainFrame ( wx.Frame ):
 		count_paragraf = len(text_paragraph)
 
 		paragraph = []
+		bobot_baru_all = []
 
 		for x in range(0, count_paragraf):
 			paragraph.append([x, text_paragraph[x].split('. ')])
@@ -197,6 +199,7 @@ class MainFrame ( wx.Frame ):
 				teks = teks + paragraph[i][1][xz] + '. '
 			# print("Paragraf : ",[x]+1)
 			print("Teks Paragraf :", teks)
+
 			token = self.nlp.tokenisasi(teks)
 			stopwords = self.nlp.stopwords(token)
 			stemming = self.nlp.stemming(stopwords)
@@ -205,6 +208,7 @@ class MainFrame ( wx.Frame ):
 			kalimat_all = []
 			bobot = []
 			kesimpulan = []
+			no_number = []
 
 			# ------------mencari IDf-------------------------
 			for x in range(0, count_text_paragraph):
@@ -213,6 +217,7 @@ class MainFrame ( wx.Frame ):
 			#     for i in range(0, len(wordDict)):
 			#         for word in doc[i]:
 			for a in range(0, len(paragraph[i][1])):
+				# print("KALIMAT ASLI ",paragraph[i][1][a])
 				kalimat2 = self.nlp.tokenisasi(paragraph[i][1][a])
 				kalimat1 = self.nlp.stopwords(kalimat2)
 				kalimat = self.nlp.stemming(kalimat1)
@@ -234,6 +239,8 @@ class MainFrame ( wx.Frame ):
 			print("Array Kalimat : ", array_kalimat)
 			print("----------------------------------------TF-IDF----------------------------------------------------")
 			tfidf = []
+			tfidf_asli = []
+			hasil_tfidf_asli = []
 			val = 0
 			for lp in range(0, count_text_paragraph):
 				val = 0
@@ -246,11 +253,22 @@ class MainFrame ( wx.Frame ):
 				# print(a)
 				# print("Word :", array_kalimat[lp])
 				tfidf.append(val)
+				tfidf_asli.append(val)
+				hasil_tfidf_asli.append(tfidf_asli[lp])
 				hasil_tfidf = tfidf
 				print("Kalimat %d" % (lp + 1), array_kalimat[lp], ". Nilai Bobot :", tfidf[lp])
-				self.m_richTextToken.WriteText("\nKalimat %d" % (lp + 1)+" "+str(array_kalimat[lp])+" "+ ". Nilai Bobot :"+" "+str(tfidf[lp]))
-
+				self.m_richTextToken.WriteText("\nKalimat %d" % (lp + 1)+" "+str(array_kalimat[lp])+" "+ ". Nilai Bobot :"+" "+str(tfidf_asli[lp]))
+			print("TFIDF ASLI LP",hasil_tfidf_asli)
+			array_baru_tfidf.append(hasil_tfidf_asli)
+			print("ARRAY ",array_baru_tfidf)
+			# print("ASASAASAS",hasil_tfidf_asli)
 			print("----------------------------------------RANGKING--------------------------------------------------")
+			for lp in range(0, count_text_paragraph):
+				no_number.append(lp+1)
+				print("Array Kalimat : %d " %(lp + 1), array_kalimat[lp])
+			# print("APA INI ISIINYA A :",paragraph[0])
+			# print("APA INI ISIINYA B :", paragraph[0][1])
+			# print(len(paragraph[i][1]))
 			for x in range(0, len(paragraph[i][1])):
 				for y in range(x + 1, len(paragraph[i][1])):
 					if hasil_tfidf[x] < hasil_tfidf[y]:
@@ -260,36 +278,68 @@ class MainFrame ( wx.Frame ):
 						sample_kalimat = kalimat_all[x]
 						kalimat_all[x] = kalimat_all[y]
 						kalimat_all[y] = sample_kalimat
+						sampel_lp = no_number[x]
+						no_number[x] = no_number[y]
+						no_number[y] = sampel_lp
 
+
+			# for z in range (0, len(paragraph[i][1])):
+			# 	print("print apa isinya %d " % (z + 1),no_number[z],kalimat_all[z],hasil_tfidf[z])
+			# for x in range(0, len(paragraph[i][1]))
 			limit_kesimpulan = len(paragraph[i][1]) / 2
 			# print(len(paragraph[i][1]))
 			limit_kesimpulan = round(limit_kesimpulan)
-			# print("isi round", round(limit_kesimpulan))
-			# print("INT", int(float(limit_kesimpulan)))
 			if limit_kesimpulan == 0:
 				limit_kesimpulan = 1
-
+			no_akhir = []
 			for x in range(0, limit_kesimpulan):
-				print(kalimat_all[x])
 				kesimpulan.append(kalimat_all[x])
 				bobot.append(hasil_tfidf[x])
+				no_akhir.append(no_number[x])
 			# print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 			# print("")
 			bobot_all.append(bobot)
 			kesimpulan_all.append(kesimpulan)
+			no_all.append(no_akhir)
 
+
+			for x in range (0, count_text_paragraph):
+				bobot_baru.append(hasil_tfidf_asli[x])
+				# print("TFID/FFFFFF",hasil_tfidf_asli[x])
+			# print("BOBOT BARU :: ",bobot_baru)
+			bobot_baru_all.append(bobot_baru)
+		# print("BOBOT BARU ALL:::",bobot_baru_all)
+
+		# print(no_all[0][0])
+		# for y in range
 		for x in range(0, count_paragraf):
+			print("paragraf %d \n"%(x + 1))
+			sort = sorted(no_all[x])
+			for y in range(0, len(no_all[x])):
+				lol = (sort[y])
+				print((array_baru_tfidf[x][lol-1]),"Ringkas %d "%(lol),paragraph[x][1][lol-1])
+
+			print("")
+		for x in range (0,count_paragraf):
 			self.m_richTextHasil.WriteText("")
 			self.m_richTextHasil.WriteText("KESIMPULAN PARAGRAF %d \n" % (x + 1))
-			# print("KESIMPULAN PARAGRAF %d" % (x + 1))
-			self.m_richTextHasil.WriteText(str(kesimpulan_all[x]))
-			self.m_richTextHasil.WriteText(str(bobot_all[x]))
-			self.m_richTextHasil.WriteText("")
-			print("KESIMPULAN PARAGRAF %d" % (x + 1))
-			print(kesimpulan_all[x])
-			print(bobot_all[x])
-			print("")
-			print("##################################################################################################")
+
+
+
+
+		# print("no all ",sorted(no_all[0]))
+		# for x in range(0, count_paragraf):
+		# 	self.m_richTextHasil.WriteText("")
+		# 	self.m_richTextHasil.WriteText("KESIMPULAN PARAGRAF %d \n" % (x + 1))
+		# 	# print("KESIMPULAN PARAGRAF %d" % (x + 1))
+		# 	self.m_richTextHasil.WriteText(str(kesimpulan_all[x]))
+		# 	self.m_richTextHasil.WriteText(str(bobot_all[x]))
+		# 	self.m_richTextHasil.WriteText("")
+		# 	print("KESIMPULAN PARAGRAF %d" % (x + 1))
+		# 	print(no_all[x])
+		# 	print(kesimpulan_all[x])
+		# 	print(bobot_all[x])
+		# 	print("##################################################################################################")
 
 
 app = wx.App(False)

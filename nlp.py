@@ -128,6 +128,10 @@ tfidf_all = []
 bobot_all = []
 kesimpulan_all = []
 kalimat_rank_all = []
+no_all = []
+no_sort = []
+bobot_baru = []
+array_baru_tfidf = []
 
 
 class corpus :
@@ -165,6 +169,7 @@ class corpus :
             # print(frequency)
             count = frequency.get(word, 0)
             frequency[word] = count + 1
+
 
         frequency_list = frequency.keys()
         # print("word",frequency_list)
